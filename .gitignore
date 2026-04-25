@@ -12,6 +12,7 @@ imports/
 data/
 *.db
 *.duckdb
+exports/
 
 # OS / editor noise
 .DS_Store

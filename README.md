@@ -34,3 +34,20 @@ Notes:
 Your exported ontology CSV(s) should be placed in `imports/` locally for analysis/ETL.
 If we want to publish a sample, we should add a **scrubbed**/minimized version explicitly.
 
+### One-command “consume + generate profiles + export”
+
+This generates a versioned export bundle under `exports/<timestamp>/` without running any server/UI.
+
+```powershell
+cd .\backend
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python -m app.pipeline.consume_and_export
+```
+
+Outputs (per run):
+- `task.csv`, `task_category.csv`, `task_to_category.csv`
+- `task_profile.jsonl` (brute-force initial suggestions from O*NET)
+- `manifest.json` (hashes + import stats)
+
