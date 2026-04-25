@@ -21,3 +21,9 @@ Desktop.ini
 # Logs
 *.log
 
+# Python
+__pycache__/
+*.pyc
+.venv/
+backend/.venv/
+
