@@ -1,0 +1,18 @@
+# Keep vendor datasets and generated outputs out of git.
+# (Many exceed GitHub size limits or are reproducible via Fetch-LaborData.ps1.)
+
+downloads/
+papers/
+
+# Local imports may contain exports with transient URLs/tokens.
+# Keep them out of git by default; add curated samples explicitly if needed.
+imports/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs
+*.log
+

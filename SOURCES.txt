@@ -1,0 +1,35 @@
+R4 labor ontology — local mirror
+Generated: 2026-04-25. Re-download O*NET/BLS when building production DB.
+Downloads used curl with --ssl-no-revoke (Windows Schannel) where TLS check failed.
+
+DIRECTORY
+- downloads/  raw archives and national tables
+- papers/  PDFs
+- imports/  drop re-exported Ontology CSV/XLSX here
+- imports/Ontology_20241208-1.csv  R4 task ontology export (~999 rows, Airtable-style columns: Task Title, categories, Task, Image URLs, Description, Phase, Metrics, Outcomes)
+- Fetch-LaborData.ps1  re-fetch vendor data (use instead of raw IWR; validates text DB size)
+
+PRESENT IN THIS FOLDER
+- db_30_2_text.zip / db_30_2_excel.zip — O*NET 30.2 full (DOL, CC-BY, onetcenter.org)
+- Related_Occupations_Research_Dataset.zip, Operational_Related_Occupations_Matrix.xlsx — O*NET relatedness 2022
+- AIOE-Data_AIOE_master.zip — Felten et al. AIOE (unzip; check repo license on GitHub)
+- papers/ONET_Related_Occupations_2022_report.pdf
+- papers/Webb_Impact_of_AI_on_Labor_Market.pdf
+- papers/Arntz_Gregory_Zierahn_2016_Skills_Tasks_Automation.pdf (FO / routine-task debate)
+
+COULD NOT AUTO-FETCH (HTTP 403 from this network — save in browser)
+- BLS OEWS national (employment / wages by SOC):
+  https://www.bls.gov/oes/current/oes_nat.htm
+  (Excel “national” download or https://www.bls.gov/oes/2024/may/ )
+- Plan / HNA “Good enough” guide PDF:
+  https://plan-p.education/images/pdf/h-humanitarian-needs-assessment-the-good-enough-guide.pdf
+- Deming (social skills) — use author copy:
+  https://scholar.harvard.edu/files/ddeming/files/deming_socialskills_aug16.pdf
+  (Published QJE 2017; same thread as NBER w21473)
+
+OTHER USEFUL (not downloaded)
+- BLS employment projections: https://www.bls.gov/emp/
+- BLS / MLR AI in projections: https://www.bls.gov/opub/mlr/2025/article/incorporating-ai-impacts-in-bls-employment-projections.htm
+- Census ACS PUMS: https://www.census.gov/programs-surveys/acs/microdata.html
+- PIAAC (US adult skills): https://nces.ed.gov/surveys/piaac/
+- Sphere: https://spherestandards.org/handbook/
