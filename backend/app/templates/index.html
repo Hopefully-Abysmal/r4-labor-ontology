@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>R4 Labor Ontology MVP</title>
+    <style>
+      body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 24px; }
+      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+      .card { border: 1px solid #ddd; border-radius: 10px; padding: 16px; }
+      input, button { padding: 8px 10px; }
+      table { border-collapse: collapse; width: 100%; }
+      td, th { border-bottom: 1px solid #eee; padding: 6px 4px; text-align: left; vertical-align: top; }
+      .muted { color: #666; font-size: 12px; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <h2>R4 Labor Ontology MVP (offline)</h2>
+    <p class="muted">
+      This is a local-only MVP. Import your ontology + O*NET, then create needs and run allocations.
+    </p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Ontology</h3>
+        <p><b>Tasks loaded:</b> {{ task_count }}</p>
+        <form method="post" action="/imports/r4-ontology">
+          <button type="submit">Import R4 ontology CSV (from imports/)</button>
+        </form>
+        <form method="post" action="/imports/onet">
+          <button type="submit">Import O*NET (DuckDB from downloads/)</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3>Create need</h3>
+        <form method="post" action="/needs/new">
+          <div>
+            <label>Title</label><br />
+            <input name="title" style="width: 100%" required />
+          </div>
+          <div style="margin-top: 8px;">
+            <label>Category</label><br />
+            <input name="category" style="width: 100%" />
+          </div>
+          <div style="margin-top: 8px; display: flex; gap: 8px;">
+            <div style="flex: 1;">
+              <label>Urgency (0-100)</label><br />
+              <input name="urgency" type="number" min="0" max="100" value="50" />
+            </div>
+            <div style="flex: 1;">
+              <label>Quantity</label><br />
+              <input name="quantity" type="number" step="0.1" value="1" />
+            </div>
+            <div style="flex: 1;">
+              <label>Unit</label><br />
+              <input name="unit" />
+            </div>
+          </div>
+          <div style="margin-top: 8px;">
+            <button type="submit">Add need</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 24px;">
+      <h3>Needs (live)</h3>
+      <p class="muted">This table updates via SSE when needs/allocations change.</p>
+      <table id="needsTable">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Created</th>
+            <th>Urgency</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for n in needs %}
+          <tr>
+            <td class="mono">{{ n.id }}</td>
+            <td class="mono">{{ n.created_at }}</td>
+            <td class="mono">{{ n.urgency }}</td>
+            <td>{{ n.title }}</td>
+            <td>{{ n.category or "" }}</td>
+            <td class="mono">{{ n.status }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div style="margin-top: 12px;">
+        <form method="post" action="/allocation/run" style="display: inline;">
+          <button type="submit">Run allocation (explainable)</button>
+        </form>
+        {% if last_run_id %}
+          <span class="muted">Last run: <span class="mono">{{ last_run_id }}</span></span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 24px;">
+      <h3>Latest allocation decisions</h3>
+      {% if decisions %}
+      <table>
+        <thead>
+          <tr>
+            <th>Need</th>
+            <th>Score</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in decisions %}
+          <tr>
+            <td class="mono">{{ d.need_id }}</td>
+            <td class="mono">{{ "%.2f"|format(d.score) }}</td>
+            <td class="mono">{{ d.reason }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="muted">No allocation run yet.</p>
+      {% endif %}
+    </div>
+
+    <script>
+      const evt = new EventSource("/events");
+      evt.onmessage = async () => {
+        const res = await fetch("/needs");
+        const data = await res.json();
+        const tbody = document.querySelector("#needsTable tbody");
+        tbody.innerHTML = "";
+        for (const n of data) {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td class="mono">${n.id}</td>
+            <td class="mono">${n.created_at}</td>
+            <td class="mono">${n.urgency}</td>
+            <td>${n.title}</td>
+            <td>${n.category ?? ""}</td>
+            <td class="mono">${n.status}</td>
+          `;
+          tbody.appendChild(tr);
+        }
+      };
+    </script>
+  </body>
+</html>
+

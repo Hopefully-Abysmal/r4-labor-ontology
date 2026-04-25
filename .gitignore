@@ -8,6 +8,11 @@ papers/
 # Keep them out of git by default; add curated samples explicitly if needed.
 imports/
 
+# Local databases / caches
+data/
+*.db
+*.duckdb
+
 # OS / editor noise
 .DS_Store
 Thumbs.db
