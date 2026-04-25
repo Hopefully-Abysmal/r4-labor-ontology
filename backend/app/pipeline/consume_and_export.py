@@ -4,7 +4,7 @@ import csv
 import hashlib
 import json
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Iterable
 
@@ -153,7 +153,7 @@ def _build_profiles(exports_dir: Path, duckdb_path: Path) -> dict:
             rec = {
                 "task_id": t.id,
                 "task_title": t.title,
-                "generated_at_utc": datetime.utcnow().isoformat() + "Z",
+                "generated_at_utc": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
                 "occupation_suggestions": top_occ,
                 "skill_suggestions": top_skills,
             }
@@ -189,7 +189,7 @@ def run() -> Path:
     onet_stats = load_onet_text_zip(onet_zip)
 
     # Export versioned bundle
-    stamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     exports_dir = settings.repo_root / "exports" / stamp
     _ensure_dirs(exports_dir)
 
